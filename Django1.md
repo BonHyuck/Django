@@ -80,10 +80,20 @@ Django는 Spotify, Instagram, Dropbox, Delivery Hero 등에 쓰였다.
     from 앱이름 import views(동작할 View)
     urlpatterns = [
      	...
+        path('index/', views.index)
         path('url명', url 경로)
-        path('index/', )
     ]
     ```
+
+#### Variable Routing
+
+```django
+urlpatterns = [
+ 	...
+    path('url명/<받을 값의 타입:변수명>', url 경로)
+    path('hello/<str:name>', views.hello)
+]    
+```
 
 
 
@@ -94,17 +104,27 @@ Django는 Spotify, Instagram, Dropbox, Delivery Hero 등에 쓰였다.
 - 함수를 생성하는 방식으로 **무조건 함수의 첫 인자는 `request` 이다**
 
   - ```python
+  def 함수이름(request, 다른 인자):
+        return render(request, 'html 파일 이름', template에 전달할 Dictionary)
+    ```
+  
+  - ```python
     def index(request):
         pass
     ```
-
+  
   - ```python
-    def dinner(request):
+  def dinner(request):
         menus = ['족발', '햄버거', '치킨', '초밥']
         pick = random.choice(menus)
         return render(request, 'dinner.html', {'pick': pick,})
     ```
-
+  
+  - ```python
+    def hello(request, name):
+        ...
+    ```
+  
   - View 에서 Template으로 내용을 전달할 땐 Dictionary 형태로 전달
 
 
@@ -131,9 +151,73 @@ Django는 Spotify, Instagram, Dropbox, Delivery Hero 등에 쓰였다.
 
 
 
-#### Django imports Style Guide
+### Django Conventions
 
-1. Standard library
-2. 3rd Party
-3. Django
-4. Local django
+- **`trailing comma`** :
+  - 목록을 작성할 때 맨 마지막 요소의 뒤에도 쉼표를 붙여, 다음 번에 요소를 추가하기 쉽도록 하는 컨벤션이 있다!
+- **app 목록 작성 `[settings.py](http://settings.py)` > `INSTALLED APPS`**
+  1. local apps
+  2. 3rd party apps
+  3. django default apps
+- **view 목록 작성 `[views.py](http://views.py)`**
+  - 각 view 간에는 두 줄 띄어쓰기
+- **django imports style guide**
+  1. standard library
+  2. 3rd party library
+  3. Django : 장고 내장 모듈
+  4. local django : 직접 생성, 혹은 다른 뷰에서 가져오는 모듈
+
+
+
+## DTL : Django Template Language
+
+> Django Template System 에서 사용하는 built-in template system이다.
+
+- 조건, 반복, 치환, 필터, 변수 등의 기능을 제공
+- 프로그래밍적 로직(view에서 작성)이 아니라 프레젠테이션을 **표현**하기 위한 것
+- 파이썬처럼 if, for를 사용할 수 있지만 **python code로 실행되는 것은 아니다**
+
+### Syntax : 공식문서 확인하기
+
+- **Variable** : `{{variable}}`
+
+- **Filter** : `{{variable|filter}}`
+
+- **Tags** : `{% tag %}`
+
+  - ```html
+    <!-- for -->
+    {% for some in something %}
+    	{{ some }}
+    {% endfor%}
+    <!-- 1부터 번호 붙이기 -->
+    {% for some in something %}
+    	{{ forloop.counter }} : {{ menu }}
+    {% endfor%}
+    <!-- 비어 있을 경우 -->
+    {% for empty in empty_list %}
+    	{{ empty }}
+    {% empty %}
+    	<p>아무것도 없습니다.</p>
+    {% endfor %}
+    ```
+
+  - ```html
+    <!-- if -->
+    {% if 'some' in something %}
+    	<p>True</p>
+    {% endif %}
+    <!-- 필터 적용 -->
+    {% if some_list|length > 10 %}
+    	<p>크다</p>
+    {% else %}
+    	<p>작다</p>
+    {% endif %}
+    ```
+
+
+
+### 템플릿 시스템 설계 철학
+
+장고에게 템플릿 시스템이란 **표현을 제어하는 도구이자 표현에 관련된 로직일 뿐**이라고 생각한다. 이를 넘어서는 기능을 지원해서는 안된다.
+
